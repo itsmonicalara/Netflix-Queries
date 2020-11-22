@@ -51,7 +51,7 @@ def total_tv_shows():
         r.set("total_movies", my_doc)
         r.set("total_tv_shows", my_doc_1)
         r.expire("total_movies", "30")
-        r.expire("total_tv_showso", "30")
+        r.expire("total_tv_shows", "30")
        	print("Total number of movies: ", my_doc)
        	print("Total number of tv shows: ", my_doc_1)
         
