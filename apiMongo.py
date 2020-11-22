@@ -60,6 +60,7 @@ def total_tv_shows():
 
 #One query to add or update an entity in the database
 #Add a new movie
+#No se si este igual necesita cache
 def add_movie(title, director, cast, country, date_added, release_year, rating, duration, listed_in, description):
     my_query = [{"$match" :{"title":title}}]
     my_doc = list(collection.aggregate(my_query))
