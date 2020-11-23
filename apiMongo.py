@@ -54,7 +54,9 @@ def total_tv_shows():
         r.expire("total_tv_shows", "30")
        	print("Total number of movies: ", my_doc)
        	print("Total number of tv shows: ", my_doc_1)
-        
+
+
+#Falta:
 #Total number of movies for a given country.
 #Total number of TV shows for given release year.
 
@@ -70,7 +72,20 @@ def add_movie(title, director, cast, country, date_added, release_year, rating, 
         my_query = {"type": "Movie", "title":title, "director":director, "cast":cast, "country":country, "date_added": date_added, "release_year": release_year, "rating": rating, "duration": duration, "listed_in": listed_in, "description": description}
         my_doc = collection.insert_one(my_query)
         print("The movie", title, "was succesfully added to the database")
+
 #Add a new TV show
+def add_tvShow(title, director, cast, country, date_added, release_year, rating, duration, listed_in, description):
+    my_query = [{"$match" :{"title":title}}]
+    my_doc = list(collection.aggregate(my_query))
+    if(len(my_doc) > 0):
+        print("The movie name already exists in the database.\n")
+    else:
+        my_query = {"type": "TV Show", "title":title, "director":director, "cast":cast, "country":country, "date_added": date_added, "release_year": release_year, "rating": rating, "duration": duration, "listed_in": listed_in, "description": description}
+        my_doc = collection.insert_one(my_query)
+        print("The tv show", title, "was succesfully added to the database")
+
+
+
 
 if __name__ == '__main__':
 	movie_name("Norm of the North: King Sized Adventure")
