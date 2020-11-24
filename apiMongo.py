@@ -44,10 +44,10 @@ def lists_of_actor(actor):
         info = r.get(key).decode("utf-8")
     except:
         info = ""
-        my_query = collection.find({"cast": actor, "title": 1})
-        for x in my_query:
-            info += x["title"]
         key = actor
+        my_query = collection.find({"cast": {"$regex": actor}})
+        for x in my_query:
+            info += x["title"]+"\n"
         print(info)
         r.set(key, info)
         r.expire(key, "300")
