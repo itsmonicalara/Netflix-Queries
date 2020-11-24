@@ -12,12 +12,11 @@ collection = db['Netflix']
 r = redis.Redis(host='localhost', port=6379, db=0)
 r.flushdb()
 
-# Have a maximum memory capacity
+# Have a maximum memory capacity - 100MB
+r.config_set("maxmemory", "104857600")
 
 # Queries about detailed information about db
 # Given a movie name - Obtain the director cast, countries and release year.
-
-
 def movie_name(movie):
 	try:
 		key = movie
@@ -39,9 +38,8 @@ def movie_name(movie):
 				print(info)
 
 # Given an actor name - Obtain a list with the movies and a list with the TV shows where he/she has participated.
+
 # Given a TV show name - Obtain the director cast, countries, and release year.
-
-
 def tvShow_name(tvShow):
 	try:
 		key = tvShow
@@ -56,16 +54,12 @@ def tvShow_name(tvShow):
 				"Country: " + x["country"] + "\n" + \
 				"Release year: " + x["release_year"]
 	key = tvShow
-	# Redis cache
 	r.set(key, info)
-	# Idk about the time
 	r.expire(key, "300")
 	print(info)
 
 # Queries about statistic about db
 # Total number of movies and TV shows.
-
-
 def total_tv_shows():
 	try:
 		total = r.get("total_movies").decode("utf-8")
@@ -81,51 +75,51 @@ def total_tv_shows():
 		r.expire("total_tv_shows", "300")
 		print("Total number of movies: ", my_doc)
 		print("Total number of tv shows: ", my_doc_1)
-
-
-# Falta:
 # Total number of movies for a given country.
-# Total number of TV shows for given release year.
 
+# Total number of TV shows for given release year.
 def total_tv_shows_by_year(release_year):
 	return
 
 
 # One query to add or update an entity in the database
 # Add a new movie
-# Necesita cache
-def add_movie(title, director, cast, country, date_added, release_year, rating, duration, listed_in, description):
-	my_query = [{"$match": {"title": title}}]
-	my_doc = list(collection.aggregate(my_query))
-	if(len(my_doc) > 0):
-		print("The movie name already exists in the database.\n")
-	else:
-		my_query = {"type": "Movie", "title": title, "director": director, "cast": cast, "country": country, "date_added": date_added,
-					"release_year": release_year, "rating": rating, "duration": duration, "listed_in": listed_in, "description": description}
-		my_doc = collection.insert_one(my_query)
-		print("The movie", title, "was succesfully added to the database")
-
+def add_movie(title, director, cast, country, date_added, release_year, rating, duration, listed_in, description):	
+	try:
+		key = title
+		info = r.get(key).decode("utf-8")
+	except:	
+		my_query = [{"$match": {"title": title}}]
+		my_doc = list(collection.aggregate(my_query))
+		if(len(my_doc) > 0):
+			print("The movie already exists in the database.\n")
+		else:
+			my_query = {"type": "Movie", "title": title, "director": director, "cast": cast, "country": country, "date_added": date_added,
+						"release_year": release_year, "rating": rating, "duration": duration, "listed_in": listed_in, "description": description}
+			my_doc = collection.insert_one(my_query)
+			key = title
+			r.set(key, info)
+			r.expire(key, "300")
+			print("The movie", title, "was succesfully added to the database")
 # Add a new TV show
-
-
 def add_tvShow(title, director, cast, country, date_added, release_year, rating, duration, listed_in, description):
-	my_query = [{"$match": {"title": title}}]
-	my_doc = list(collection.aggregate(my_query))
-	if(len(my_doc) > 0):
-		print("The movie name already exists in the database.\n")
-	else:
-		my_query = {"type": "TV Show", "title": title, "director": director, "cast": cast, "country": country, "date_added": date_added,
+	try: 
+		key = title
+		info = r.get(key).decode("utf-8")
+	except:
+		my_query = [{"$match": {"title": title}}]
+		my_doc = list(collection.aggregate(my_query))
+		if(len(my_doc) > 0):
+			print("The tv show already exists in the database.\n")
+		else:
+			my_query = {"type": "TV Show", "title": title, "director": director, "cast": cast, "country": country, "date_added": date_added,
 					"release_year": release_year, "rating": rating, "duration": duration, "listed_in": listed_in, "description": description}
-		my_doc = collection.insert_one(my_query)
-		print("The tv show", title, "was succesfully added to the database")
-
+			my_doc = collection.insert_one(my_query)
+			key = title
+			r.set(key, info)
+			r.expire(key, "300")
+			print("The tv show", title, "was succesfully added to the database")
+	
 
 if __name__ == '__main__':
 	movie_name("Norm of the North: King Sized Adventure")
-	tvShow_name("Transformers Prime")
-	total_tv_shows("2020")
-	total_tv_shows_by_year()
-	add_movie("The SpongeBob Movie: Sponge on the Run", "Tim Hill", "Tom Kenny", "United States", "November 22, 2020",
-			  "2020", "A", "91 min", "Comedy", "Live/Action film based on the animated television series SpongeBob SquarePants.")
-	add_tvShow("The SpongeBob Series", "Tim Hill", "Tom Kenny", "United States", "November 22, 2020", "2020",
-			   "A", "91 min", "Comedy", "Live/Action film based on the animated television series SpongeBob SquarePants.")
