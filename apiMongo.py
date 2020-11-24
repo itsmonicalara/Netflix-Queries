@@ -105,7 +105,14 @@ def total_movies_country(country):
 
 # Total number of TV shows for given release year.
 def total_tv_shows_by_year(release_year):
-	return
+	try:
+        key = release_year
+        r.get(key).decode("utf-8")
+    except:
+        my_doc = collection.count_documents({"release_year": release_year,"type": "TV Show"})
+        r.set(key, my_doc)
+        r.expire(key, "300
+        print("Total number of TV shows of ",release_year," are: ",my_doc)
 
 
 # One query to add or update an entity in the database
