@@ -38,6 +38,19 @@ def movie_name(movie):
 				print(info)
 
 # Given an actor name - Obtain a list with the movies and a list with the TV shows where he/she has participated.
+def lists_of_actor(actor):
+    try:
+        key = actor
+        info = r.get(key).decode("utf-8")
+    except:
+        info = ""
+        my_query = collection.find({"cast": actor, "title": 1})
+        for x in my_query:
+            info += x["title"]
+        key = actor
+        print(info)
+        r.set(key, info)
+        r.expire(key, "300")
 
 # Given a TV show name - Obtain the director cast, countries, and release year.
 def tvShow_name(tvShow):
@@ -75,7 +88,20 @@ def total_tv_shows():
 		r.expire("total_tv_shows", "300")
 		print("Total number of movies: ", my_doc)
 		print("Total number of tv shows: ", my_doc_1)
+
 # Total number of movies for a given country.
+def total_movies_country(country):
+    try:
+        key = country
+        r.get(key).decode("utf-8")
+    except:
+        my_doc = collection.count_documents({"country": country, "type": "Movie"})
+        key = country
+        r.set(key, my_doc)
+        r.expire(key, "300")
+        print("Total number of movies", my_doc)
+
+
 
 # Total number of TV shows for given release year.
 def total_tv_shows_by_year(release_year):
@@ -84,11 +110,11 @@ def total_tv_shows_by_year(release_year):
 
 # One query to add or update an entity in the database
 # Add a new movie
-def add_movie(title, director, cast, country, date_added, release_year, rating, duration, listed_in, description):	
+def add_movie(title, director, cast, country, date_added, release_year, rating, duration, listed_in, description):
 	try:
 		key = title
 		info = r.get(key).decode("utf-8")
-	except:	
+	except:
 		my_query = [{"$match": {"title": title}}]
 		my_doc = list(collection.aggregate(my_query))
 		if(len(my_doc) > 0):
@@ -103,7 +129,7 @@ def add_movie(title, director, cast, country, date_added, release_year, rating, 
 			print("The movie", title, "was succesfully added to the database")
 # Add a new TV show
 def add_tvShow(title, director, cast, country, date_added, release_year, rating, duration, listed_in, description):
-	try: 
+	try:
 		key = title
 		info = r.get(key).decode("utf-8")
 	except:
@@ -119,7 +145,9 @@ def add_tvShow(title, director, cast, country, date_added, release_year, rating,
 			r.set(key, info)
 			r.expire(key, "300")
 			print("The tv show", title, "was succesfully added to the database")
-	
+
 
 if __name__ == '__main__':
-	movie_name("Norm of the North: King Sized Adventure")
+	#movie_name("Norm of the North: King Sized Adventure")
+	#total_movies_country("Brazil")
+	lists_of_actor("Nicolas Cage")
