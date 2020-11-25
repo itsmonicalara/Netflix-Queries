@@ -155,6 +155,41 @@ def add_tvShow(title, director, cast, country, date_added, release_year, rating,
 
 
 if __name__ == '__main__':
-	#movie_name("Norm of the North: King Sized Adventure")
-	#total_movies_country("Brazil")
-	lists_of_actor("Nicolas Cage")
+	ans1=True
+	while ans1:
+    	print ("""
+		1. Given a movie name - Obtain the director cast, countries and release year
+		2. Given an actor name - Obtain a list with the movies and a list with the TV shows where he/she has participated.
+		3. Given a TV show name - Obtain the director cast, countries, and release year.
+		4. Total number of movies and TV shows.
+		5. Total number of movies for a given country.
+		6. Total number of TV shows for given release year.
+		7. Add a new movie
+		8. Add a new TV show
+		9. Exit
+		""")
+		ans=raw_input("What would you like to do? ") 
+		if ans=="1":
+			ans = input("movie name?") 
+			movie_name(ans)
+		elif ans=="2":
+			ans = input("actor name?") 
+			lists_of_actor(ans)
+		elif ans=="3":
+			ans = input("TV Show name?")
+			tvShow_name(ans)
+		elif ans=="4":
+			total_tv_shows()
+		elif ans=='5':
+			ans = input("Country?")
+			total_movies_country(ans)
+		elif ans=='6':
+			ans = input("year?")
+			total_tv_shows_by_year(ans)
+		elif ans=='7':
+
+		elif ans=='8':
+		
+		else ans=="9":
+			ans1 = False
+		
