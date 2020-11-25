@@ -83,7 +83,7 @@ def total_tv_shows():
 		my_doc_1 = collection.count_documents({"type": "TV Show"})
 		r.set("total_movies", my_doc)
 		r.set("total_tv_shows", my_doc_1)
-		r.expire("total_movies", "30")
+		r.expire("total_movies", "300")
 		r.expire("total_tv_shows", "300")
 		print("Total number of movies: ", my_doc)
 		print("Total number of tv shows: ", my_doc_1)
